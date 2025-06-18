@@ -1,33 +1,38 @@
 document.addEventListener('DOMContentLoaded', function () {
-    const container = document.querySelector('.footer-text_section-wrapper.is-contact');
-    if (!container) return;
+  const host = 'lewismediapartners.com';
+  const container = document.querySelector('.footer-text_section-wrapper.is-contact');
 
-    const links = container.querySelectorAll('.footer-hero-text-grey-link.is-email');
-    if (!links.length) return;
+  if (!container) return;
 
-    const domain = 'lewismediapartners.com';
+  const links = container.querySelectorAll('.footer-hero-text-grey-link.is-email');
 
-    links.forEach(link => {
-        let encoded = true;
+  links.forEach(link => {
+    let encoded = true;
 
-        function decode() {
-            if (!encoded) return;
-            const user = link.getAttribute('href');
-            link.setAttribute('href', user + '@' + domain);
-            encoded = false;
-        }
+    // Initial obfuscation
+    const email = link.getAttribute('href');
+    const username = email.split('@')[0];
+    link.setAttribute('href', username);
 
-        function encode() {
-            if (!encoded) return;
-            const fullEmail = link.getAttribute('href');
-            const base = fullEmail.slice(0, -1 * (domain.length + 1));
-            link.setAttribute('href', base);
-            encoded = true;
-        }
+    // Decode on hover/focus
+    const decode = () => {
+      if (encoded) {
+        link.setAttribute('href', username + '@' + host);
+        encoded = false;
+      }
+    };
 
-        link.addEventListener('mouseover', decode);
-        link.addEventListener('focus', decode);
-        link.addEventListener('mouseout', encode);
-        link.addEventListener('blur', encode);
-    });
+    // Encode on mouseout/blur
+    const encode = () => {
+      if (!encoded) {
+        link.setAttribute('href', username);
+        encoded = true;
+      }
+    };
+
+    link.addEventListener('mouseover', decode);
+    link.addEventListener('mouseout', encode);
+    link.addEventListener('focus', decode);
+    link.addEventListener('blur', encode);
+  });
 });
