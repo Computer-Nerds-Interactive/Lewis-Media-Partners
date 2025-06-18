@@ -1,14 +1,14 @@
-document.addEventListener('DOMContentLoaded', function () {
-    const containers = document.querySelectorAll('.team-member_popup-half');
-    if (!containers.length) return;
-
+(function () {
     const domain = 'lewismediapartners.com';
+    const selector = '.team-member_popup-half';
+    const linkSelector = '.email';
+    const processedAttr = 'data-email-script-attached';
 
-    containers.forEach(container => {
-        const links = container.querySelectorAll('.email');
-        if (!links.length) return;
-
+    function attachHandlersToLinks(container) {
+        const links = container.querySelectorAll(linkSelector);
         links.forEach(link => {
+            if (link.hasAttribute(processedAttr)) return;
+
             let encoded = true;
 
             function decode() {
@@ -30,6 +30,26 @@ document.addEventListener('DOMContentLoaded', function () {
             link.addEventListener('focus', decode);
             link.addEventListener('mouseout', encode);
             link.addEventListener('blur', encode);
+
+            link.setAttribute(processedAttr, 'true');
         });
-    });
-});
+    }
+
+    function observeCMSContent() {
+        const observer = new MutationObserver(() => {
+            document.querySelectorAll(selector).forEach(attachHandlersToLinks);
+        });
+
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true,
+        });
+
+        // Run once initially just in case they're already in DOM
+        requestAnimationFrame(() => {
+            document.querySelectorAll(selector).forEach(attachHandlersToLinks);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', observeCMSContent);
+})();
