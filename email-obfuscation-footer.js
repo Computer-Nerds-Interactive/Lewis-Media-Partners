@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
         }
 
         function encode() {
-            if (encoded) return;
+            if (!encoded) return;
             const fullEmail = link.getAttribute('href');
             const base = fullEmail.slice(0, -1 * (domain.length + 1));
             link.setAttribute('href', base);
